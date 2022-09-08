@@ -1,14 +1,5 @@
-from ctypes import pointer
-from dataclasses import dataclass
-
-
-class LinkedList():
-    """
-    Once more classes are added, this will be the parent class
-    """
-    def __init__(self, value, pointer) -> None:
-        pass
-
+from abc import ABC, abstractmethod
+from email import header
 class Node:
     """
     Simple class representing a Node
@@ -18,8 +9,21 @@ class Node:
         self.value = value
         self.next = None
 
+    def __repr__(self) -> str:
+        return str(self.value)
 
-class SLL():
+
+class LinkedList(ABC):
+    """
+    Once more classes are added, this will be the parent class
+    """
+    def __init__(self) -> None:
+        super.__init__()
+
+
+
+
+class SLL(LinkedList):
     """
     Class representing a singly linked list
     head: first element in the list
@@ -27,11 +31,13 @@ class SLL():
 
     def __init__(self, head) -> None:
         self.head = head
+        self.tail = None
     
     def traverse(self, node=None):
         """
-        Traverses the SLL.
-        If no node is given, will start at the beginning of the list
+        Traverses the SLL and prints each node's value.
+        If no node is given, will start at the beginning of the list.
+        Automatically sets tail if non-existent
         node:   starting-point of the traversal
         """
         if not node:
@@ -40,6 +46,8 @@ class SLL():
         print(node.value)
         if node.next:
             self.traverse(node.next)
+        else:
+            self.tail = node
 
     def push(self, new_data):
         """
@@ -79,14 +87,18 @@ class SLL():
         new_data:   value to insert at end of list
         """
         new_node = Node(new_data)
-        if not self.head:
-            self.head = new_node
+        if self.tail:
+            final_node = self.tail
+        else:
+            if not self.head:
+                self.head = new_node
 
-        final_node = self.head
-        while (final_node.next):
-            final_node = final_node.next
+            final_node = self.head
+            while (final_node.next):
+                final_node = final_node.next
 
         final_node.next = new_node
+        self.tail = final_node.next
 
         print(f"Successfully appended new node with value {new_data} to list.")
 
@@ -98,6 +110,63 @@ class SLL():
         """
         pass
 
+    def search_idx(self, index):
+        """
+        Traverses the linkedlist and returns the value of a node at a given index.
+        """
+        assert index >= 0
+        counter = 0
+        node = self.head
+        while (True):
+            if index == counter:
+                return node
+            else:
+                counter += 1
+                node = node.next
+
+
+    def delete_beginning(self):
+        """
+        Deletes the first element from the linked list
+        Time Complexity: O(1)
+        Auxiliary Space: O(1) TODO: correct?
+        """
+        temp = self.head
+        self.head = self.head.next
+        del temp
+        print(f"Deleted head. New head has value {self.head.value}")
+
+
+    def delete_end(self):
+        node = self.head
+        while node.next != self.tail:
+            node = node.next
+        self.tail = node
+        del node.next
+        print(f"Deleted tail. New tail has value {self.tail.value}")
+
+
+    def delete_middle(self, idx):
+        """
+        Deletes a note at a given index.
+        idx:    index of the node to be deleted
+        """
+        temp = self.head
+        prev = self.head
+
+        for i in range(idx):
+            if i == 0 and idx == 1:
+                self.head = self.head.next
+                del temp
+            else:
+                if i == idx - 1 and temp:
+                    prev.next =  temp.next
+                    del temp
+                else:
+                    prev = temp
+                    if prev == None:
+                        raise IndexError("Requested index is larger then the length of the list")
+                    temp = temp.next
 
 
 if __name__ == "__main__":
@@ -114,4 +183,5 @@ if __name__ == "__main__":
 
     sll.insert_after(n2, 2.5)
     sll.append(4)
+    sll.delete_middle(20)
     # sll.insert_after(None, "23")
