@@ -21,6 +21,21 @@ class LinkedList(ABC):
     def __init__(self, head) -> None:
         self.head = head
 
+    def __repr__(self) -> str:
+        string = ""
+        node = self.head
+        while True:
+            string = string + f"{str(node.value)} "
+            if node.next:
+                node = node.next
+            else:
+                break
+        return string
+
+    @abstractmethod
+    def swap_keys(self, key1, key2):
+        pass
+
 class SLL(LinkedList):
     """
     Class representing a singly linked list
@@ -48,6 +63,8 @@ class SLL(LinkedList):
         else:
             self.tail = node
 
+    def __repr__(self) -> str:
+        return super().__repr__()
 
     def push(self, new_data):
         """
@@ -171,6 +188,50 @@ class SLL(LinkedList):
                         raise IndexError("Requested index is larger then the length of the list")
                     temp = temp.next
 
+    def swap_keys(self, key1, key2):
+        node1 = None
+        node2 = None
+        node1_prev = None
+        node2_prev = None
+        node_curr = self.head
+        node_prev = self.head
+
+        if key1 == key2:
+            return
+
+        # Find the nodes
+        while True:
+            # Assign keys to node if found
+            if node_curr.value == key1:
+                node1_prev = node_prev
+                node1 = node_curr
+            elif node_curr.value == key2:
+                node2_prev = node_prev
+                node2 = node_curr
+
+            if node1 and node2:
+                    break
+            elif node_curr.next == None:
+                missing = "Reached end of the list. Missing the following nodes:"
+                if node1 == None:
+                    missing = f"{missing} node1"
+                if node2 == None:
+                    missing = f"{missing} node2"
+                print(missing)
+                return None
+
+            node_prev = node_curr
+            node_curr = node_curr.next
+        
+        # Swap the nodes:
+        node1_prev.next = node2
+        node2_prev.next = node1
+        
+        node_curr = node1.next # Use as placeholder
+        node1.next = node2.next
+        node2.next = node_curr
+
+        print(f"Sucessfully switched nodes of {key1}, {key2}")
 class DLL(LinkedList):
     def __init__(self, head) -> None:
         self.tail = None
@@ -237,8 +298,6 @@ class DLL(LinkedList):
         print(f"Deleted node at the end of the DLL.")
     
 
-        
-
 def test_sll():
     n1 = Node(1)
     n2 = Node(2)
@@ -251,10 +310,13 @@ def test_sll():
     sll.push(0)
     sll.traverse()
 
-    sll.insert_after(n2, 2.5)
+    # sll.insert_after(n2, 2.5)
     sll.append(4)
-    sll.delete_middle(20)
+    sll.swap_keys(1, 3)
+    print(sll)
+    # sll.delete_middle(20)
     # sll.insert_after(None, "23")
+    #sll.swap_keys("a", "b")
 
 def test_dll():
     n1 = Node(1)
@@ -267,5 +329,5 @@ def test_dll():
 
 
 if __name__ == "__main__":
-    #test_sll()
-    test_dll()
+    test_sll()
+    # test_dll()
