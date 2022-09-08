@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from email import header
+
 class Node:
     """
     Simple class representing a Node
@@ -8,6 +8,7 @@ class Node:
     def __init__(self, value) -> None:
         self.value = value
         self.next = None
+        self.prev = None
 
     def __repr__(self) -> str:
         return str(self.value)
@@ -17,11 +18,8 @@ class LinkedList(ABC):
     """
     Once more classes are added, this will be the parent class
     """
-    def __init__(self) -> None:
-        super.__init__()
-
-
-
+    def __init__(self, head) -> None:
+        self.head = head
 
 class SLL(LinkedList):
     """
@@ -30,6 +28,7 @@ class SLL(LinkedList):
     """
 
     def __init__(self, head) -> None:
+        #TODO: make use of inheritance
         self.head = head
         self.tail = None
     
@@ -49,6 +48,7 @@ class SLL(LinkedList):
         else:
             self.tail = node
 
+
     def push(self, new_data):
         """
         Add a new entry at the beginning of the list
@@ -61,6 +61,7 @@ class SLL(LinkedList):
         new_node.next = self.head
         self.head = new_node
     
+
     def insert_after(self, prev_node, new_data):
         """
         Inserts a new node into the list after a specified node.
@@ -77,6 +78,7 @@ class SLL(LinkedList):
         prev_node.next = new_node
 
         print(f"Successfully inserted new node with value {new_data} after given previous node.")
+
 
     def append(self, new_data):
         """
@@ -109,6 +111,7 @@ class SLL(LinkedList):
         -> Might fit better under algorithms?
         """
         pass
+
 
     def search_idx(self, index):
         """
@@ -168,8 +171,75 @@ class SLL(LinkedList):
                         raise IndexError("Requested index is larger then the length of the list")
                     temp = temp.next
 
+class DLL(LinkedList):
+    def __init__(self, head) -> None:
+        self.tail = None
+        super().__init__(head=head)
+    
+    def push(self, new_data):
+        """
+        Creates and inserts new object at beginning of list.
+        new_data:   Data to be appended to DLL
+        """
+        new_node = Node(new_data)
+        tmp = self.head
+        new_node.next = tmp
+        tmp.prev = new_node
+        self.head = new_node
 
-if __name__ == "__main__":
+        print(f"Pushed new node with value {new_data} to beginning of ll.")
+        
+    def append(self, new_data):
+        """
+        Creates a new node for the data and appends it to the back of the DLL.
+        new_data:   Data to be appended to DLL
+        """
+        new_node = Node(new_data)
+        if self.tail:
+            node = self.tail
+
+        else:
+            node = self.head
+            while node.next:
+                node = node.next
+
+        node.next = new_node
+        new_node.prev = node
+        self.tail = new_node
+
+        print(f"Appended new node with value {new_data}.")
+    
+    def delete_beginning(self):
+        """
+        Deletes the beginning node of the DLL.
+        """
+        temp = self.head
+        self.head = temp.next
+        self.head.prev = None
+        del temp
+
+        print(f"Deleted node at the beginning of the DLL.")
+    
+    def delete_end(self):
+        """
+        Deletes the last node of the DLL.
+        """
+        if self.tail:
+            node = self.tail
+        else:
+            node = self.head
+            while node.next:
+                node = node.next
+        self.tail = node.prev
+        self.tail.next = None
+        del node
+        
+        print(f"Deleted node at the end of the DLL.")
+    
+
+        
+
+def test_sll():
     n1 = Node(1)
     n2 = Node(2)
     n3 = Node(3)
@@ -185,3 +255,17 @@ if __name__ == "__main__":
     sll.append(4)
     sll.delete_middle(20)
     # sll.insert_after(None, "23")
+
+def test_dll():
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+
+    dll = DLL(n1)
+    dll.append(n2)
+    dll.append(n3)
+
+
+if __name__ == "__main__":
+    #test_sll()
+    test_dll()
